@@ -6,7 +6,6 @@ namespace Meek\Collection;
 use Countable;
 use stdClass;
 use InvalidArgumentException;
-use UnderflowException;
 
 abstract class StackTest extends TestSuite
 {
@@ -49,13 +48,27 @@ abstract class StackTest extends TestSuite
     /**
      * @test
      */
-    public function throws_exception_if_item_does_not_match_data_type_from_first_item_pushed_on()
+    public function throws_exception_if_item_does_not_match_data_type_from_first_item()
+    {
+        $expectedException = new InvalidArgumentException('Item is not an instance of "string"');
+        $stack = $this->createEmptyStack();
+        $stack->push('1');
+
+        $callback = function () use ($stack) {
+            $stack->push(2);
+        };
+
+        $this->assertThrows($expectedException, $callback);
+    }
+
+    /**
+     * @test
+     */
+    public function throws_exception_if_item_does_not_match_object_type_from_first_item()
     {
         $expectedException = new InvalidArgumentException('Item is not an instance of "stdClass"');
-        $item = new stdClass();
         $stack = $this->createEmptyStack();
-
-        $stack->push($item);
+        $stack->push(new stdClass());
 
         $callback = function () use ($stack) {
             $stack->push(new class {});
@@ -67,7 +80,7 @@ abstract class StackTest extends TestSuite
     /**
      * @test
      */
-    public function item_is_pushed_on_top_if_matches_set_data_type()
+    public function item_is_pushed_on_top_if_matches_data_type()
     {
         $expectedItem = new stdClass();
         $stack = $this->createEmptyStack();
@@ -76,24 +89,6 @@ abstract class StackTest extends TestSuite
         $actualItem = $stack->peek();
 
        $this->assertSame($expectedItem, $actualItem);
-    }
-
-    /**
-     * @test
-     */
-    public function can_handle_scalar_types()
-    {
-        $actualValue = '';
-        $stack = $this->createEmptyStack();
-        $stack->push('d');
-        $stack->push('o');
-        $stack->push('g');
-
-        $actualValue .= $stack->pop();
-        $actualValue .= $stack->pop();
-        $actualValue .= $stack->pop();
-
-        $this->assertEquals('god', $actualValue);
     }
 
     /**
@@ -122,21 +117,6 @@ abstract class StackTest extends TestSuite
         $count = count($stack);
 
         $this->assertEquals(2, $count);
-    }
-
-    /**
-     * @test
-     */
-    public function throws_exception_if_trying_to_pop_item_from_empty_collection()
-    {
-        $expectedException = new UnderflowException('Stack is empty');
-        $stack = $this->createEmptyStack();
-
-        $callback = function () use ($stack) {
-            $item = $stack->pop();
-        };
-
-        $this->assertThrows($expectedException, $callback);
     }
 
     /**
