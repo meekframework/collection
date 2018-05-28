@@ -21,4 +21,16 @@ class UnboundedStackTest extends StackTest
         $this->assertEquals('o', $stack->pop());
         $this->assertEquals('d', $stack->pop());
     }
+
+    /**
+     * @test
+     */
+    public function returns_null_if_trying_to_pop_item_from_empty_collection()
+    {
+        $stack = new UnboundedStack();
+
+        $item = $stack->pop();
+
+        $this->assertNull($item);
+    }
 }

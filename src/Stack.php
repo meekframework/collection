@@ -5,7 +5,6 @@ namespace Meek\Collection;
 
 use Countable;
 use InvalidArgumentException;
-use UnderflowException;
 
 /**
  * A stack is a linear data structure that makes use of the LIFO (Last In, First Out) principle.
@@ -47,16 +46,11 @@ abstract class Stack implements Countable
 
     /**
      * Remove an element from the 'top' of the stack.
-     * @throws UnderflowException If trying to remove an item from an empty stack.
-     * @return mixed The top-most item in the stack.
+     * @return mixed|null The top-most item in the stack or nothing.
      */
     public function pop()
     {
-        if (empty($this->items)) {
-            throw new UnderflowException('Stack is empty');
-        }
-
-        return array_pop($this->items);
+        return $this->size() === 0 ? null : array_pop($this->items);
     }
 
     /**
