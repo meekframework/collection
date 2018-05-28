@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Meek\Collection;
 
 use OverflowException;
+use UnderflowException;
 
 class BoundedStackTest extends StackTest
 {
@@ -35,6 +36,21 @@ class BoundedStackTest extends StackTest
 
         $callback = function () use ($stack) {
             $stack->push(new class {});
+        };
+
+        $this->assertThrows($expectedException, $callback);
+    }
+
+    /**
+     * @test
+     */
+    public function throws_exception_if_trying_to_pop_item_from_empty_stack()
+    {
+        $expectedException = new UnderflowException('Stack is empty');
+        $stack = new BoundedStack(1);
+
+        $callback = function () use ($stack) {
+            $item = $stack->pop();
         };
 
         $this->assertThrows($expectedException, $callback);

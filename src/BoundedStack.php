@@ -4,9 +4,10 @@ declare(strict_types=1);
 namespace Meek\Collection;
 
 use OverflowException;
+use UnderflowException;
 
 /**
- * A 'bounded' stack contains a finite number of items.
+ * A 'bounded' stack contains a finite number of items. It also throws exceptions when a boundary is reached.
  */
 class BoundedStack extends Stack
 {
@@ -41,6 +42,21 @@ class BoundedStack extends Stack
         }
 
         parent::push($item);
+    }
+
+    /**
+     * {@inheritdoc}
+     * @throws UnderflowException If trying to remove an item from an empty stack.
+     */
+    public function pop()
+    {
+        $item = parent::pop();
+
+        if ($item === null) {
+            throw new UnderflowException('Stack is empty');
+        }
+
+        return $item;
     }
 
     /**
